@@ -12,8 +12,7 @@
   <script src="https://unpkg.com/@tensorflow/tfjs-backend-webgl@3.7.0/dist/tf-backend-webgl.js"></script>
 
   <!-- The main handpose library -->
-  <script
-    src="https://cdn.jsdelivr.net/npm/@tensorflow-models/hand-pose-detection@2.0.0/dist/hand-pose-detection.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/hand-pose-detection@2.0.0/dist/hand-pose-detection.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands@0.4.1646424915/hands.min.js"></script>
 
   <!-- The fingerpose library -->
@@ -202,6 +201,20 @@
         <tbody>
           <tr>
             <td id="no-curl-count">0</td>
+          </tr>
+        </tbody>
+      </table>
+      <br>
+      <h2>Hand Detection Status</h2>
+      <table class="summary">
+        <thead>
+          <tr>
+            <th>Hand(s) Detected</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td id="hand-detection-status">No hand detected</td>
           </tr>
         </tbody>
       </table>

@@ -48,15 +48,17 @@ async function main() {
     right: document.querySelector("#pose-result-right"),
     left: document.querySelector("#pose-result-left"),
   };
+
+  const handStatus = document.querySelector("#hand-status");
+
   // configure gesture estimator
-  // add "✌🏻" and "👍" as sample gestures
   const knownGestures = [
     fp.Gestures.VictoryGesture,
     fp.Gestures.ThumbsUpGesture,
     ...gestures,
   ];
   const GE = new fp.GestureEstimator(knownGestures);
-  // load handpose model
+
   const detector = await createDetector();
   console.log("mediaPose model loaded");
 
@@ -77,19 +79,37 @@ async function main() {
       gestureStrings.dont;
     pair.clear();
   }
-  // main estimation loop
+
+  function updateHandStatus(leftHandDetected, rightHandDetected) {
+    const handStatus = document.querySelector("#hand-detection-status");
+
+    if (leftHandDetected && rightHandDetected) {
+      handStatus.innerText = "Both hands detected";
+    } else if (leftHandDetected) {
+      handStatus.innerText = "Left hand detected";
+    } else if (rightHandDetected) {
+      handStatus.innerText = "Right hand detected";
+    } else {
+      handStatus.innerText = "No hand detected";
+    }
+  }
+
   const estimateHands = async () => {
-    // clear canvas overlay
     ctx.clearRect(0, 0, config.video.width, config.video.height);
     resultLayer.right.innerText = "";
     resultLayer.left.innerText = "";
 
-    // get hand landmarks from video
     const hands = await detector.estimateHands(video, {
       flipHorizontal: true,
     });
 
+    let leftHandDetected = false;
+    let rightHandDetected = false;
+
     for (const hand of hands) {
+      if (hand.handedness === "Left") leftHandDetected = true;
+      if (hand.handedness === "Right") rightHandDetected = true;
+
       for (const keypoint of hand.keypoints) {
         const name = keypoint.name.split("_")[0].toString().toLowerCase();
         const color = landmarkColors[name];
@@ -102,31 +122,13 @@ async function main() {
         keypoint.z,
       ]);
 
-      const fingerLabels = {
-        thumb: "Thumb",
-        index: "Index",
-        middle: "Middle",
-        ring: "Ring",
-        pinky: "Pinky",
-        wrist: "Wrist",
-      };
-
-      for (const keypoint of hand.keypoints) {
-        const fingerName = keypoint.name.split("_")[0].toString().toLowerCase();
-        const label = fingerLabels[fingerName];
-        console.log(
-          `${label} - x: ${keypoint.x}, y: ${keypoint.y}, z: ${keypoint.z}`
-        );
-      }
-
       const prediction = GE.estimate(keypoints3D, 8.5);
       if (prediction.gestures.length === 0) {
-        updateDebugInfo(prediction.poseData, "left");
+        updateDebugInfo(prediction.poseData, hand.handedness.toLowerCase());
       }
 
       if (!prediction.gestures.length) continue;
 
-      // find gesture with highest match score
       const result = prediction.gestures.reduce((p, c) =>
         p.score > c.score ? p : c
       );
@@ -141,7 +143,9 @@ async function main() {
 
       checkGestureCombination(chosenHand, prediction.poseData);
     }
-    // ...and so on
+
+    updateHandStatus(leftHandDetected, rightHandDetected);
+
     setTimeout(() => {
       estimateHands();
     }, 1000 / config.video.fps);
@@ -166,7 +170,6 @@ async function initCamera(width, height, fps) {
   video.width = width;
   video.height = height;
 
-  // get video stream
   const stream = await navigator.mediaDevices.getUserMedia(constraints);
   video.srcObject = stream;
 
@@ -184,33 +187,9 @@ function drawPoint(ctx, x, y, r, color) {
   ctx.fill();
 }
 
-// function updateDebugInfo(data, hand) {
-//   const summaryTable = `#summary-${hand}`;
-
-//   let noCurlCount = 0; // Initialize count for fingers with no curl
-
-//   for (let fingerIdx in data) {
-//     const curlType = data[fingerIdx][1];
-
-//     document.querySelector(`${summaryTable} span#curl-${fingerIdx}`).innerHTML =
-//       data[fingerIdx][1];
-
-//     if (curlType === "No Curl") {
-//       noCurlCount++;
-//     }
-//     //console.log(data[fingerIdx][1]);
-//     document.querySelector(`${summaryTable} span#dir-${fingerIdx}`).innerHTML =
-//       data[fingerIdx][2];
-//   }
-
-//   // Update the count of fingers with no curl in the new table
-//   document.getElementById("no-curl-count").innerHTML = noCurlCount;
-// }
-
 function updateDebugInfo(data, hand) {
   const summaryTable = `#summary-${hand}`;
 
-  // Initialize finger states
   let thumbNoCurl = false;
   let indexNoCurl = false;
   let middleNoCurl = false;
@@ -223,7 +202,6 @@ function updateDebugInfo(data, hand) {
     document.querySelector(`${summaryTable} span#curl-${fingerIdx}`).innerHTML =
       data[fingerIdx][1];
 
-    // Update finger states based on the curl type
     if (curlType === "No Curl") {
       if (fingerIdx == 0) thumbNoCurl = true;
       if (fingerIdx == 1) indexNoCurl = true;
@@ -236,7 +214,6 @@ function updateDebugInfo(data, hand) {
       data[fingerIdx][2];
   }
 
-  // Determine the count based on the specified cases
   let specialCount = 0;
   if (
     thumbNoCurl &&
@@ -245,7 +222,7 @@ function updateDebugInfo(data, hand) {
     !ringNoCurl &&
     !pinkyNoCurl
   ) {
-    specialCount = 1; // Only thumb is no curl
+    specialCount = 1;
   } else if (
     !thumbNoCurl &&
     indexNoCurl &&
@@ -253,7 +230,7 @@ function updateDebugInfo(data, hand) {
     !ringNoCurl &&
     !pinkyNoCurl
   ) {
-    specialCount = 1; // Only index finger is no curl
+    specialCount = 1;
   } else if (
     !thumbNoCurl &&
     indexNoCurl &&
@@ -261,7 +238,7 @@ function updateDebugInfo(data, hand) {
     !ringNoCurl &&
     !pinkyNoCurl
   ) {
-    specialCount = 2; // Only index and middle are no curl
+    specialCount = 2;
   } else if (
     thumbNoCurl &&
     indexNoCurl &&
@@ -269,7 +246,7 @@ function updateDebugInfo(data, hand) {
     !ringNoCurl &&
     !pinkyNoCurl
   ) {
-    specialCount = 2; // Only thumb and index are no curl
+    specialCount = 2;
   } else if (
     thumbNoCurl &&
     indexNoCurl &&
@@ -277,7 +254,7 @@ function updateDebugInfo(data, hand) {
     !ringNoCurl &&
     !pinkyNoCurl
   ) {
-    specialCount = 3; // Only thumb, index, and middle are no curl
+    specialCount = 3;
   } else if (
     !thumbNoCurl &&
     indexNoCurl &&
@@ -285,7 +262,7 @@ function updateDebugInfo(data, hand) {
     ringNoCurl &&
     !pinkyNoCurl
   ) {
-    specialCount = 3; // Only index, middle, and ring are no curl
+    specialCount = 3;
   } else if (
     !thumbNoCurl &&
     indexNoCurl &&
@@ -293,7 +270,7 @@ function updateDebugInfo(data, hand) {
     ringNoCurl &&
     pinkyNoCurl
   ) {
-    specialCount = 4; // Only index, middle, ring, and pinky are no curl
+    specialCount = 4;
   } else if (
     thumbNoCurl &&
     indexNoCurl &&
@@ -301,10 +278,9 @@ function updateDebugInfo(data, hand) {
     ringNoCurl &&
     pinkyNoCurl
   ) {
-    specialCount = 5; // All fingers are no curl
+    specialCount = 5;
   }
 
-  // Update the count of fingers with no curl in the new table
   document.getElementById("no-curl-count").innerHTML = specialCount;
 }
 
