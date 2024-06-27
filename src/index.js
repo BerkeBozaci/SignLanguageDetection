@@ -106,6 +106,9 @@ async function main() {
     let leftHandDetected = false;
     let rightHandDetected = false;
 
+    let leftHandCount = 0;
+    let rightHandCount = 0;
+
     for (const hand of hands) {
       if (hand.handedness === "Left") leftHandDetected = true;
       if (hand.handedness === "Right") rightHandDetected = true;
@@ -134,7 +137,13 @@ async function main() {
       );
       const found = gestureStrings[result.name];
       const chosenHand = hand.handedness.toLowerCase();
-      updateDebugInfo(prediction.poseData, chosenHand);
+      const count = updateDebugInfo(prediction.poseData, chosenHand);
+
+      if (chosenHand === "left") {
+        leftHandCount = count;
+      } else if (chosenHand === "right") {
+        rightHandCount = count;
+      }
 
       if (found !== gestureStrings.dont) {
         resultLayer[chosenHand].innerText = found;
@@ -145,6 +154,7 @@ async function main() {
     }
 
     updateHandStatus(leftHandDetected, rightHandDetected);
+    updateCombinedCount(leftHandCount, rightHandCount);
 
     setTimeout(() => {
       estimateHands();
@@ -282,6 +292,19 @@ function updateDebugInfo(data, hand) {
   }
 
   document.getElementById("no-curl-count").innerHTML = specialCount;
+
+  return specialCount;
+}
+
+function updateCombinedCount(leftHandCount, rightHandCount) {
+  let combinedCount = leftHandCount + rightHandCount;
+
+  if (leftHandCount === 5) {
+    combinedCount = 5 + rightHandCount;
+  } else if (rightHandCount === 5) {
+    combinedCount = 5 + leftHandCount;
+  }
+  document.getElementById("no-curl-count").innerHTML = combinedCount;
 }
 
 window.addEventListener("DOMContentLoaded", () => {
