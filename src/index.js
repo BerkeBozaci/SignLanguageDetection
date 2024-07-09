@@ -21,6 +21,7 @@ const gestureStrings = {
   scissors: "✌🏻",
   dont: "🙅",
   iloveyou: "I love you",
+  a: "A",
 };
 const base = ["Horizontal ", "Diagonal Up "];
 const dont = {
@@ -140,27 +141,18 @@ async function main() {
       const chosenHand = hand.handedness.toLowerCase();
       const count = updateDebugInfo(prediction.poseData, chosenHand);
 
-      console.log("-----Checking I Love You gesture-----");
-      checkILoveYouGesture(prediction.poseData);
-      console.log("-----I Love You gesture checked-----");
-      // if (checkILoveYouGesture(prediction.poseData)) {
-      //   //resultLayer[chosenHand].innerText = gestureStrings.iloveyou;
-      //   updateSentenceTable("I love you", chosenHand);
-      //   console.log("I love you gesture detected");
-      // }
+      console.log("-----Checking I Love You and A gestures-----");
+      checkHolonextGesture(prediction.poseData);
+      checkLetterAGesture(prediction.poseData);
+      checkLetterBGesture(prediction.poseData);
+
+      console.log("-----Gestures checked-----");
 
       if (chosenHand === "left") {
         leftHandCount = count;
       } else if (chosenHand === "right") {
         rightHandCount = count;
       }
-
-      // if (found !== gestureStrings.dont) {
-      //   //resultLayer[chosenHand].innerText = found;
-      //   continue;
-      // }
-
-      //checkGestureCombination(chosenHand, prediction.poseData);
     }
 
     updateHandStatus(leftHandDetected, rightHandDetected);
@@ -306,7 +298,7 @@ function updateDebugInfo(data, hand) {
   return specialCount;
 }
 
-function checkILoveYouGesture(poseData) {
+function checkHolonextGesture(poseData) {
   let thumbNoCurl = false;
   let indexNoCurl = false;
   let middleFullCurl = false;
@@ -316,7 +308,7 @@ function checkILoveYouGesture(poseData) {
   let indexFullCurl = false;
   let pinkyFullCurl = false;
   //////
-  console.log("Checking I Love You gesture");
+  console.log("Checking Holonext gesture");
 
   for (let fingerIdx in poseData) {
     const curlType = poseData[fingerIdx][1];
@@ -339,11 +331,115 @@ function checkILoveYouGesture(poseData) {
     ringFullCurl &&
     pinkyFullCurl
   ) {
-    console.log("I Love You gesture detected");
+    console.log("Holonext gesture detected");
     //updateSentenceTable("I love you");
     document.getElementById("detected-sentence").innerHTML = "Holonext";
   } else {
     document.getElementById("detected-sentence").innerHTML = "None";
+  }
+}
+
+function checkLetterAGesture(poseData) {
+  let thumbNoCurl = false;
+  let indexFullCurl = false;
+  let middleFullCurl = false;
+  let ringFullCurl = false;
+  let pinkyFullCurl = false;
+  let directions = ["Diagonal Up Left", "Vertical Up"];
+  let validDirections = true;
+
+  for (let fingerIdx in poseData) {
+    const curlType = poseData[fingerIdx][1];
+    const direction = poseData[fingerIdx][2];
+
+    if (fingerIdx == 0 && curlType === "No Curl") {
+      thumbNoCurl = true;
+    } else if (curlType === "Full Curl") {
+      if (fingerIdx == 1) indexFullCurl = true;
+      if (fingerIdx == 2) middleFullCurl = true;
+      if (fingerIdx == 3) ringFullCurl = true;
+      if (fingerIdx == 4) pinkyFullCurl = true;
+    } else {
+      validDirections = false;
+    }
+
+    if (!directions.includes(direction)) {
+      validDirections = false;
+    }
+  }
+
+  if (
+    thumbNoCurl &&
+    indexFullCurl &&
+    middleFullCurl &&
+    ringFullCurl &&
+    pinkyFullCurl &&
+    validDirections
+  ) {
+    console.log("Letter A gesture detected");
+    document.getElementById("detected-letter").innerHTML = "A";
+  } else {
+    document.getElementById("detected-letter").innerHTML = "None";
+  }
+}
+
+function checkLetterBGesture(poseData) {
+  let thumbHalfCurl = false;
+  let indexNoCurl = false;
+  let middleNoCurl = false;
+  let ringNoCurl = false;
+  let pinkyNoCurl = false;
+  let validDirections = true;
+
+  for (let fingerIdx in poseData) {
+    const curlType = poseData[fingerIdx][1];
+    const direction = poseData[fingerIdx][2];
+
+    if (
+      fingerIdx == 0 &&
+      curlType === "Half Curl" &&
+      (direction === "Diagonal Up Right" || direction === "Vertical Up")
+    ) {
+      thumbHalfCurl = true;
+    } else if (
+      fingerIdx == 1 &&
+      curlType === "No Curl" &&
+      direction === "Vertical Up"
+    ) {
+      indexNoCurl = true;
+    } else if (
+      fingerIdx == 2 &&
+      curlType === "No Curl" &&
+      direction === "Vertical Up"
+    ) {
+      middleNoCurl = true;
+    } else if (
+      fingerIdx == 3 &&
+      curlType === "No Curl" &&
+      direction === "Vertical Up"
+    ) {
+      ringNoCurl = true;
+    } else if (
+      fingerIdx == 4 &&
+      curlType === "No Curl" &&
+      direction === "Vertical Up"
+    ) {
+      pinkyNoCurl = true;
+    } else {
+      validDirections = false;
+    }
+  }
+
+  if (
+    thumbHalfCurl &&
+    indexNoCurl &&
+    middleNoCurl &&
+    ringNoCurl &&
+    pinkyNoCurl &&
+    validDirections
+  ) {
+    console.log("Letter B gesture detected");
+    document.getElementById("detected-letter").innerHTML = "B";
   }
 }
 
@@ -356,22 +452,6 @@ function updateCombinedCount(leftHandCount, rightHandCount) {
     combinedCount = 5 + leftHandCount;
   }
   document.getElementById("no-curl-count").innerHTML = combinedCount;
-}
-
-function updateSentenceTable(sentence, hand) {
-  const sentenceTable = document.querySelector("#sentence-table tbody");
-  const row = document.createElement("tr");
-
-  const gestureCell = document.createElement("td");
-  gestureCell.innerText = sentence;
-
-  const handCell = document.createElement("td");
-  handCell.innerText = hand.charAt(0).toUpperCase() + hand.slice(1);
-
-  row.appendChild(gestureCell);
-  row.appendChild(handCell);
-
-  sentenceTable.appendChild(row);
 }
 
 window.addEventListener("DOMContentLoaded", () => {
