@@ -20,6 +20,7 @@ const gestureStrings = {
   paper: "🖐",
   scissors: "✌🏻",
   dont: "🙅",
+  iloveyou: "I love you",
 };
 const base = ["Horizontal ", "Diagonal Up "];
 const dont = {
@@ -139,18 +140,27 @@ async function main() {
       const chosenHand = hand.handedness.toLowerCase();
       const count = updateDebugInfo(prediction.poseData, chosenHand);
 
+      console.log("-----Checking I Love You gesture-----");
+      checkILoveYouGesture(prediction.poseData);
+      console.log("-----I Love You gesture checked-----");
+      // if (checkILoveYouGesture(prediction.poseData)) {
+      //   //resultLayer[chosenHand].innerText = gestureStrings.iloveyou;
+      //   updateSentenceTable("I love you", chosenHand);
+      //   console.log("I love you gesture detected");
+      // }
+
       if (chosenHand === "left") {
         leftHandCount = count;
       } else if (chosenHand === "right") {
         rightHandCount = count;
       }
 
-      if (found !== gestureStrings.dont) {
-        resultLayer[chosenHand].innerText = found;
-        continue;
-      }
+      // if (found !== gestureStrings.dont) {
+      //   //resultLayer[chosenHand].innerText = found;
+      //   continue;
+      // }
 
-      checkGestureCombination(chosenHand, prediction.poseData);
+      //checkGestureCombination(chosenHand, prediction.poseData);
     }
 
     updateHandStatus(leftHandDetected, rightHandDetected);
@@ -296,6 +306,47 @@ function updateDebugInfo(data, hand) {
   return specialCount;
 }
 
+function checkILoveYouGesture(poseData) {
+  let thumbNoCurl = false;
+  let indexNoCurl = false;
+  let middleFullCurl = false;
+  let ringFullCurl = false;
+  let pinkyNoCurl = false;
+  ///////////
+  let indexFullCurl = false;
+  let pinkyFullCurl = false;
+  //////
+  console.log("Checking I Love You gesture");
+
+  for (let fingerIdx in poseData) {
+    const curlType = poseData[fingerIdx][1];
+    console.log("Finger", fingerIdx, "Curl Type", curlType);
+    if (curlType === "No Curl") {
+      if (fingerIdx == 0) thumbNoCurl = true;
+      if (fingerIdx == 1) indexNoCurl = true;
+      if (fingerIdx == 4) pinkyNoCurl = true;
+    } else if (curlType === "Full Curl") {
+      if (fingerIdx == 1) indexFullCurl = true;
+      if (fingerIdx == 4) pinkyFullCurl = true;
+      if (fingerIdx == 2) middleFullCurl = true;
+      if (fingerIdx == 3) ringFullCurl = true;
+    }
+  }
+  if (
+    thumbNoCurl &&
+    indexFullCurl &&
+    middleFullCurl &&
+    ringFullCurl &&
+    pinkyFullCurl
+  ) {
+    console.log("I Love You gesture detected");
+    //updateSentenceTable("I love you");
+    document.getElementById("detected-sentence").innerHTML = "Holonext";
+  } else {
+    document.getElementById("detected-sentence").innerHTML = "None";
+  }
+}
+
 function updateCombinedCount(leftHandCount, rightHandCount) {
   let combinedCount = leftHandCount + rightHandCount;
 
@@ -305,6 +356,22 @@ function updateCombinedCount(leftHandCount, rightHandCount) {
     combinedCount = 5 + leftHandCount;
   }
   document.getElementById("no-curl-count").innerHTML = combinedCount;
+}
+
+function updateSentenceTable(sentence, hand) {
+  const sentenceTable = document.querySelector("#sentence-table tbody");
+  const row = document.createElement("tr");
+
+  const gestureCell = document.createElement("td");
+  gestureCell.innerText = sentence;
+
+  const handCell = document.createElement("td");
+  handCell.innerText = hand.charAt(0).toUpperCase() + hand.slice(1);
+
+  row.appendChild(gestureCell);
+  row.appendChild(handCell);
+
+  sentenceTable.appendChild(row);
 }
 
 window.addEventListener("DOMContentLoaded", () => {
