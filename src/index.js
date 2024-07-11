@@ -716,4 +716,12 @@ window.addEventListener("DOMContentLoaded", () => {
     .addEventListener("click", function () {
       document.getElementById("detected-text").innerHTML = "";
     });
+
+  document.getElementById("delete-last").addEventListener("click", function () {
+    let str = document.getElementById("detected-text").innerHTML;
+    document.getElementById("detected-text").innerHTML = str.substring(
+      0,
+      str.length - 1
+    );
+  });
 });
