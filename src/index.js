@@ -362,6 +362,7 @@ function checkAlphabetGesture(poseData) {
   ) {
     console.log("Letter A gesture detected");
     document.getElementById("detected-letter").innerHTML = "A";
+    updateTextArea("A");
   }
 
   //Case B:
@@ -385,6 +386,7 @@ function checkAlphabetGesture(poseData) {
   ) {
     console.log("Letter B gesture detected");
     document.getElementById("detected-letter").innerHTML = "B";
+    updateTextArea("B");
   }
 
   //Case C:
@@ -407,6 +409,7 @@ function checkAlphabetGesture(poseData) {
   ) {
     console.log("Letter C gesture detected");
     document.getElementById("detected-letter").innerHTML = "C";
+    updateTextArea("C");
   }
 
   //Case D:
@@ -429,6 +432,7 @@ function checkAlphabetGesture(poseData) {
   ) {
     console.log("Letter D gesture detected");
     document.getElementById("detected-letter").innerHTML = "D";
+    updateTextArea("D");
   }
 
   //Case E:
@@ -451,6 +455,7 @@ function checkAlphabetGesture(poseData) {
   ) {
     console.log("Letter E gesture detected");
     document.getElementById("detected-letter").innerHTML = "E";
+    updateTextArea("E");
   }
 
   // Case F:
@@ -473,6 +478,7 @@ function checkAlphabetGesture(poseData) {
   ) {
     console.log("Letter F gesture detected");
     document.getElementById("detected-letter").innerHTML = "F";
+    updateTextArea("F");
   }
 
   // Case G:
@@ -495,6 +501,7 @@ function checkAlphabetGesture(poseData) {
   ) {
     console.log("Letter G gesture detected");
     document.getElementById("detected-letter").innerHTML = "G";
+    updateTextArea("G");
   }
 
   // Case H:
@@ -517,6 +524,7 @@ function checkAlphabetGesture(poseData) {
   ) {
     console.log("Letter H gesture detected");
     document.getElementById("detected-letter").innerHTML = "H";
+    updateTextArea("H");
   }
 
   // Case I:
@@ -539,6 +547,7 @@ function checkAlphabetGesture(poseData) {
   ) {
     console.log("Letter I gesture detected");
     document.getElementById("detected-letter").innerHTML = "I";
+    updateTextArea("I");
   }
 
   // // Case J:
@@ -565,6 +574,7 @@ function checkAlphabetGesture(poseData) {
   ) {
     console.log("Letter L gesture detected");
     document.getElementById("detected-letter").innerHTML = "L";
+    updateTextArea("L");
   }
 
   // // Case M:
@@ -591,6 +601,7 @@ function checkAlphabetGesture(poseData) {
   ) {
     console.log("Letter O gesture detected");
     document.getElementById("detected-letter").innerHTML = "O";
+    updateTextArea("O");
   }
   // // Case P:
 
@@ -616,6 +627,7 @@ function checkAlphabetGesture(poseData) {
   ) {
     console.log("Letter R gesture detected");
     document.getElementById("detected-letter").innerHTML = "R";
+    updateTextArea("R");
   }
   // // Case S:
 
@@ -639,6 +651,7 @@ function checkAlphabetGesture(poseData) {
   ) {
     console.log("Letter T gesture detected");
     document.getElementById("detected-letter").innerHTML = "T";
+    updateTextArea("T");
   }
   // // Case U:
 
@@ -667,6 +680,21 @@ function updateCombinedCount(leftHandCount, rightHandCount) {
   document.getElementById("no-curl-count").innerHTML = combinedCount;
 }
 
+function updateTextArea(letter) {
+  let textArea = document.getElementById("detected-text").innerHTML;
+  let lastLetter = "";
+  if (textArea == "None") {
+    textArea = "";
+  } else {
+    lastLetter = textArea.slice(-1);
+  }
+
+  if (lastLetter !== letter) {
+    textArea += letter;
+  }
+  document.getElementById("detected-text").innerHTML = textArea;
+}
+
 window.addEventListener("DOMContentLoaded", () => {
   initCamera(config.video.width, config.video.height, config.video.fps).then(
     (video) => {
@@ -682,4 +710,10 @@ window.addEventListener("DOMContentLoaded", () => {
   canvas.width = config.video.width;
   canvas.height = config.video.height;
   console.log("Canvas initialized");
+
+  document
+    .getElementById("delete-button")
+    .addEventListener("click", function () {
+      document.getElementById("detected-text").innerHTML = "";
+    });
 });
