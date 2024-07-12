@@ -485,19 +485,19 @@ function checkAlphabetGesture(poseData) {
   else if (
     // thumb
     poseData[0][1] == "No Curl" &&
-    poseData[0][2] == "Diagonal Up Left" &&
+    poseData[0][2] == "Horizontal Right" &&
     // index
     poseData[1][1] == "Half Curl" &&
-    poseData[1][2] == "Diagonal Up Left" &&
+    poseData[1][2] == "Diagonal Up Right" &&
     // middle
-    poseData[2][1] == "No Curl" &&
-    poseData[2][2] == "Vertical Up" &&
+    poseData[2][1] == "Full Curl" &&
+    (poseData[2][2] == "Vertical Up" || "Diagonal Up Right") &&
     // ring
-    poseData[3][1] == "No Curl" &&
-    poseData[3][2] == "Vertical Up" &&
+    poseData[3][1] == "Full Curl" &&
+    poseData[3][2] == "Diagonal Up Right" &&
     // pinky
-    poseData[4][1] == "No Curl" &&
-    poseData[4][2] == "Vertical Up"
+    poseData[4][1] == "Full Curl" &&
+    poseData[4][2] == "Diagonal Up Right"
   ) {
     console.log("Letter G gesture detected");
     document.getElementById("detected-letter").innerHTML = "G";
@@ -513,8 +513,8 @@ function checkAlphabetGesture(poseData) {
     poseData[1][1] == "No Curl" &&
     poseData[1][2] == "Horizontal Right" &&
     // middle
-    poseData[2][1] == "Half Curl" &&
-    poseData[2][2] == "Horizontal Right" &&
+    poseData[2][1] == "No Curl" &&
+    (poseData[2][2] == "Horizontal Right" || "Diagonal Up Right") &&
     // ring
     poseData[3][1] == "Full Curl" &&
     poseData[3][2] == "Horizontal Right" &&
@@ -552,7 +552,28 @@ function checkAlphabetGesture(poseData) {
 
   // // Case J:
 
-  // // Case K:
+  // Case K:
+  else if (
+    // thumb
+    poseData[0][1] == "No Curl" &&
+    poseData[0][2] == "Vertical Up" &&
+    // index
+    poseData[1][1] == "No Curl" &&
+    poseData[1][2] == "Vertical Up" &&
+    // middle
+    poseData[2][1] == "No Curl" &&
+    poseData[2][2] == "Vertical Up" &&
+    // ring
+    poseData[3][1] == "Full Curl" &&
+    poseData[3][2] == "Vertical Up" &&
+    // pinky
+    poseData[4][1] == "Full Curl" &&
+    poseData[4][2] == "Diagonal Up Right"
+  ) {
+    console.log("Letter K gesture detected");
+    document.getElementById("detected-letter").innerHTML = "K";
+    updateTextArea("K");
+  }
 
   // Case L:
   else if (
@@ -569,7 +590,7 @@ function checkAlphabetGesture(poseData) {
     poseData[3][1] == "Full Curl" &&
     poseData[3][2] == "Vertical Up" &&
     // pinky
-    poseData[4][1] == "No Curl" &&
+    poseData[4][1] == "Full Curl" &&
     poseData[4][2] == "Vertical Up"
   ) {
     console.log("Letter L gesture detected");
@@ -577,9 +598,51 @@ function checkAlphabetGesture(poseData) {
     updateTextArea("L");
   }
 
-  // // Case M:
+  // Case M:
+  else if (
+    // thumb
+    poseData[0][1] == "No Curl" &&
+    poseData[0][2] == "Diagonal Up Right" &&
+    // index
+    poseData[1][1] == "Full Curl" &&
+    poseData[1][2] == "Diagonal Up Left" &&
+    // middle
+    poseData[2][1] == "Full Curl" &&
+    poseData[2][2] == "Diagonal Up Left" &&
+    // ring
+    poseData[3][1] == "Full Curl" &&
+    poseData[3][2] == "Vertical Up" &&
+    // pinky
+    poseData[4][1] == "Full Curl" &&
+    poseData[4][2] == "Vertical Up"
+  ) {
+    console.log("Letter M gesture detected");
+    document.getElementById("detected-letter").innerHTML = "M";
+    updateTextArea("M");
+  }
 
-  // // Case N:
+  // Case N:
+  else if (
+    // thumb
+    poseData[0][1] == "No Curl" &&
+    poseData[0][2] == "Vertical Up" &&
+    // index
+    poseData[1][1] == "Full Curl" &&
+    poseData[1][2] == "Diagonal Up Left" &&
+    // middle
+    poseData[2][1] == "Full Curl" &&
+    poseData[2][2] == "Diagonal Up Left" &&
+    // ring
+    poseData[3][1] == "Full Curl" &&
+    poseData[3][2] == "Vertical Up" &&
+    // pinky
+    poseData[4][1] == "Full Curl" &&
+    poseData[4][2] == "Vertical Up"
+  ) {
+    console.log("Letter N gesture detected");
+    document.getElementById("detected-letter").innerHTML = "N";
+    updateTextArea("N");
+  }
 
   // Case O:
   else if (
@@ -603,10 +666,51 @@ function checkAlphabetGesture(poseData) {
     document.getElementById("detected-letter").innerHTML = "O";
     updateTextArea("O");
   }
-  // // Case P:
+  // Case P:
+  else if (
+    // thumb
+    poseData[0][1] == "No Curl" &&
+    (poseData[0][2] == "Diagonal Up Right" || "Horizontal Right") &&
+    // index
+    poseData[1][1] == "No Curl" &&
+    (poseData[1][2] == "Diagonal Up Right" || "Horizontal Right") &&
+    // middle
+    poseData[2][1] == "Half Curl" &&
+    (poseData[2][2] == "Diagonal Up Right" || "Horizontal Right") &&
+    // ring
+    poseData[3][1] == "Full Curl" &&
+    (poseData[3][2] == "Diagonal Up Right" || "Horizontal Right") &&
+    // pinky
+    poseData[4][1] == "Full Curl" &&
+    (poseData[4][2] == "Diagonal Up Right" || "Horizontal Right")
+  ) {
+    console.log("Letter P gesture detected");
+    document.getElementById("detected-letter").innerHTML = "P";
+    updateTextArea("P");
+  }
 
-  // // Case Q:
-
+  // Case Q:
+  else if (
+    // thumb
+    poseData[0][1] == "Half Curl" &&
+    poseData[0][2] == "Horizontal Right" &&
+    // index
+    poseData[1][1] == "Half Curl" &&
+    poseData[1][2] == "Horizontal Right" &&
+    // middle
+    poseData[2][1] == "Full Curl" &&
+    poseData[2][2] == "Diagonal Up Right" &&
+    // ring
+    poseData[3][1] == "Full Curl" &&
+    poseData[3][2] == "Diagonal Up Right" &&
+    // pinky
+    poseData[4][1] == "Full Curl" &&
+    poseData[4][2] == "Diagonal Up Right"
+  ) {
+    console.log("Letter Q gesture detected");
+    document.getElementById("detected-letter").innerHTML = "Q";
+    updateTextArea("Q");
+  }
   // Case R:
   else if (
     // thumb
@@ -629,7 +733,28 @@ function checkAlphabetGesture(poseData) {
     document.getElementById("detected-letter").innerHTML = "R";
     updateTextArea("R");
   }
-  // // Case S:
+  // Case S:
+  else if (
+    // thumb
+    poseData[0][1] == "Half Curl" &&
+    poseData[0][2] == "Vertical Up" &&
+    // index
+    poseData[1][1] == "Full Curl" &&
+    poseData[1][2] == "Vertical Up" &&
+    // middle
+    poseData[2][1] == "Full Curl" &&
+    poseData[2][2] == "Vertical Up" &&
+    // ring
+    poseData[3][1] == "Full Curl" &&
+    poseData[3][2] == "Vertical Up" &&
+    // pinky
+    poseData[4][1] == "Full Curl" &&
+    poseData[4][2] == "Vertical Up"
+  ) {
+    console.log("Letter S gesture detected");
+    document.getElementById("detected-letter").innerHTML = "S";
+    updateTextArea("S");
+  }
 
   // Case T:
   else if (
@@ -653,14 +778,75 @@ function checkAlphabetGesture(poseData) {
     document.getElementById("detected-letter").innerHTML = "T";
     updateTextArea("T");
   }
-  // // Case U:
+  // Case U:
+  else if (
+    // thumb
+    poseData[0][1] == "Half Curl" &&
+    poseData[0][2] == "Diagonal Up Right" &&
+    // index
+    poseData[1][1] == "No Curl" &&
+    poseData[1][2] == "Vertical Up" &&
+    // middle
+    poseData[2][1] == "No Curl" &&
+    poseData[2][2] == "Vertical Up" &&
+    // ring
+    poseData[3][1] == "Full Curl" &&
+    poseData[3][2] == "Vertical Up" &&
+    // pinky
+    poseData[4][1] == "Full Curl" &&
+    poseData[4][2] == "Vertical Up"
+  ) {
+    console.log("Letter U gesture detected");
+    document.getElementById("detected-letter").innerHTML = "U";
+    updateTextArea("U");
+  }
 
-  // // Case V:
-
+  // Case V:
+  else if (
+    // thumb
+    poseData[0][1] == "No Curl" &&
+    poseData[0][2] == "Diagonal Up Right" &&
+    // index
+    poseData[1][1] == "No Curl" &&
+    poseData[1][2] == "Vertical Up" &&
+    // middle
+    poseData[2][1] == "No Curl" &&
+    poseData[2][2] == "Vertical Up" &&
+    // ring
+    poseData[3][1] == "Full Curl" &&
+    poseData[3][2] == "Vertical Up" &&
+    // pinky
+    poseData[4][1] == "Full Curl" &&
+    poseData[4][2] == "Vertical Up"
+  ) {
+    console.log("Letter V gesture detected");
+    document.getElementById("detected-letter").innerHTML = "V";
+    updateTextArea("V");
+  }
   // // Case W:
 
-  // // Case X:
-
+  // Case X:
+  else if (
+    // thumb
+    poseData[0][1] == "No Curl" &&
+    poseData[0][2] == "Horizontal Right" &&
+    // index
+    poseData[1][1] == "No Curl" &&
+    poseData[1][2] == "Diagonal Up Right" &&
+    // middle
+    poseData[2][1] == "Half Curl" &&
+    poseData[2][2] == "Diagonal Up Right" &&
+    // ring
+    poseData[3][1] == "Half Curl" &&
+    poseData[3][2] == "Horizontal Right" &&
+    // pinky
+    poseData[4][1] == "Half Curl" &&
+    poseData[4][2] == "Horizontal Right"
+  ) {
+    console.log("Letter X gesture detected");
+    document.getElementById("detected-letter").innerHTML = "X";
+    updateTextArea("X");
+  }
   // // Case Y:
 
   // Case Z:
