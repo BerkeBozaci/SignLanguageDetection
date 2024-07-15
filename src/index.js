@@ -130,6 +130,7 @@ async function main() {
       const prediction = GE.estimate(keypoints3D, 8.5);
       if (prediction.gestures.length === 0) {
         updateDebugInfo(prediction.poseData, hand.handedness.toLowerCase());
+        checkAlphabetGesture(prediction.poseData);
       }
 
       if (!prediction.gestures.length) continue;
@@ -550,7 +551,7 @@ function checkAlphabetGesture(poseData) {
     updateTextArea("I");
   }
 
-  // // Case J:
+  // // Case J: Needs movement
 
   // Case K:
   else if (
@@ -823,7 +824,28 @@ function checkAlphabetGesture(poseData) {
     document.getElementById("detected-letter").innerHTML = "V";
     updateTextArea("V");
   }
-  // // Case W:
+  // Case W:
+  else if (
+    // thumb
+    poseData[0][1] == "Half Curl" &&
+    poseData[0][2] == "Diagonal Up Right" &&
+    // index
+    poseData[1][1] == "No Curl" &&
+    poseData[1][2] == "Vertical Up" &&
+    // middle
+    poseData[2][1] == "No Curl" &&
+    poseData[2][2] == "Vertical Up" &&
+    // ring
+    poseData[3][1] == "No Curl" &&
+    poseData[3][2] == "Vertical Up" &&
+    // pinky
+    poseData[4][1] == "Half Curl" &&
+    poseData[4][2] == "Vertical Up"
+  ) {
+    console.log("Letter W gesture detected");
+    document.getElementById("detected-letter").innerHTML = "W";
+    updateTextArea("W");
+  }
 
   // Case X:
   else if (
@@ -847,9 +869,30 @@ function checkAlphabetGesture(poseData) {
     document.getElementById("detected-letter").innerHTML = "X";
     updateTextArea("X");
   }
-  // // Case Y:
+  // Case Y:
+  else if (
+    // thumb
+    poseData[0][1] == "No Curl" &&
+    poseData[0][2] == "Diagonal Up Left" &&
+    // index
+    poseData[1][1] == "Full Curl" &&
+    (poseData[1][2] == "Vertical Up" || "Diagonal Up Left") &&
+    // middle
+    poseData[2][1] == "Full Curl" &&
+    poseData[2][2] == "Vertical Up" &&
+    // ring
+    poseData[3][1] == "Full Curl" &&
+    poseData[3][2] == "Vertical Up" &&
+    // pinky
+    poseData[4][1] == "No Curl" &&
+    poseData[4][2] == "Diagonal Up Right"
+  ) {
+    console.log("Letter Y gesture detected");
+    document.getElementById("detected-letter").innerHTML = "Y";
+    updateTextArea("Y");
+  }
 
-  // Case Z:
+  // Case Z:  // needs movement
   // else {
   //   document.getElementById("detected-letter").innerHTML = "None";
   // }
