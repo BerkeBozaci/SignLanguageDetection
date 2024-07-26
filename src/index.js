@@ -124,6 +124,15 @@ async function main() {
       if (hand.handedness === "Left") leftHandDetected = true;
       if (hand.handedness === "Right") rightHandDetected = true;
 
+      // Log finger coordinates in a structured format
+      console.log(`Hand: ${hand.handedness}`);
+      hand.keypoints3D.forEach((keypoint, index) => {
+        console.log(
+          `Finger ${index}: x=${keypoint.x.toFixed(5)}, y=${keypoint.y.toFixed(
+            5
+          )}, z=${keypoint.z.toFixed(5)}`
+        );
+      });
       for (const keypoint of hand.keypoints) {
         const name = keypoint.name.split("_")[0].toString().toLowerCase();
         const color = landmarkColors[name];
@@ -135,6 +144,12 @@ async function main() {
         keypoint.y,
         keypoint.z,
       ]);
+      // normalized version of x y z coordinates x y are normalized
+      // according to 1 and z is normalized according to
+      // width and height of the view
+
+      // console.log("Hand keypoints 3D");
+      // console.log(keypoints3D);
 
       const prediction = GE.estimate(keypoints3D, 8.5);
       if (prediction.gestures.length === 0) {
@@ -159,7 +174,7 @@ async function main() {
       if (handHistory[chosenHand].length > maxHistoryLength) {
         handHistory[chosenHand].shift();
       }
-      detectDynamicGesture(handHistory, chosenHand);
+      detectDynamicGesture(handHistory);
 
       checkHolonextGesture(prediction.poseData);
 

@@ -1,4 +1,4 @@
-export function detectDynamicGesture(history, chosenHand) {
+export function detectDynamicGesture(history) {
   //console.log(history);
 
   const leftHand = history.left;
@@ -22,9 +22,6 @@ export function detectDynamicGesture(history, chosenHand) {
     // console.log(leftHand[i].poseData[2]); // middle
     // console.log(leftHand[i].poseData[3]); // ring
     // console.log(leftHand[i].poseData[4]); // pinky
-
-    const curlType = leftHand[i].poseData[0][1];
-    const direction = leftHand[i].poseData[0][2];
 
     const thumbCurlLeft = leftHand[i].poseData[0][1];
     const indexCurlLeft = leftHand[i].poseData[1][1];
