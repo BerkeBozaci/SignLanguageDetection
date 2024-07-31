@@ -1,5 +1,5 @@
 import { gestures } from "./gestures.js";
-import { detectDynamicGesture } from "./words.js";
+import { detectBiteGesture, detectLoveGesture } from "./words.js";
 import { checkAlphabetGesture } from "./letters.js";
 
 const config = {
@@ -208,9 +208,13 @@ async function main() {
         );
       }
 
-      if (detectDynamicGesture(handHistory) && distanceBetweenHand < 300) {
+      if (detectBiteGesture(handHistory) && distanceBetweenHand < 300) {
         console.log("Bite gesture detected");
-        document.getElementById("double-hand-text").innerHTML = "bite";
+        document.getElementById("double-hand-text").innerHTML = "Bite";
+      }
+      if (detectLoveGesture(handHistory) && distanceBetweenHand < 60) {
+        console.log("Love gesture detected");
+        document.getElementById("double-hand-text").innerHTML = "Love";
       }
 
       if (chosenHand === "left") {
