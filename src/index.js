@@ -120,19 +120,37 @@ async function main() {
     let leftHandCount = 0;
     let rightHandCount = 0;
 
+    let leftWrist = null;
+    let rightWrist = null;
+
     for (const hand of hands) {
       if (hand.handedness === "Left") leftHandDetected = true;
       if (hand.handedness === "Right") rightHandDetected = true;
 
       // Log finger coordinates in a structured format
-      console.log(`Hand: ${hand.handedness}`);
-      hand.keypoints3D.forEach((keypoint, index) => {
-        console.log(
-          `Finger ${index}: x=${keypoint.x.toFixed(5)}, y=${keypoint.y.toFixed(
-            5
-          )}, z=${keypoint.z.toFixed(5)}`
-        );
-      });
+
+      const wrist = hand.keypoints.find((kp) => kp.name === "wrist");
+      if (wrist) {
+        // console.log(
+        //   `Hand: ${hand.handedness} Wrist: x=${wrist.x.toFixed(
+        //     5
+        //   )}, y=${wrist.y.toFixed(5)}`
+        // );
+        if (hand.handedness === "Left") {
+          leftWrist = wrist;
+        } else if (hand.handedness === "Right") {
+          rightWrist = wrist;
+        }
+      }
+
+      // console.log(`Hand: ${hand.handedness}`);
+      // hand.keypoints3D.forEach((keypoint, index) => {
+      //   console.log(
+      //     `Finger ${index}: x=${keypoint.x.toFixed(5)}, y=${keypoint.y.toFixed(
+      //       5
+      //     )}, z=${keypoint.z.toFixed(5)}`
+      //   );
+      // });
       for (const keypoint of hand.keypoints) {
         const name = keypoint.name.split("_")[0].toString().toLowerCase();
         const color = landmarkColors[name];
@@ -174,11 +192,26 @@ async function main() {
       if (handHistory[chosenHand].length > maxHistoryLength) {
         handHistory[chosenHand].shift();
       }
-      detectDynamicGesture(handHistory);
 
       checkHolonextGesture(prediction.poseData);
 
       checkAlphabetGesture(prediction.poseData);
+
+      let distanceBetweenHand = Infinity;
+      if (leftWrist && rightWrist) {
+        distanceBetweenHand = Math.sqrt(
+          Math.pow(leftWrist.x - rightWrist.x, 2) +
+            Math.pow(leftWrist.y - rightWrist.y, 2)
+        );
+        console.log(
+          `Distance between wrists: ${distanceBetweenHand.toFixed(5)}`
+        );
+      }
+
+      if (detectDynamicGesture(handHistory) && distanceBetweenHand < 300) {
+        console.log("Bite gesture detected");
+        document.getElementById("double-hand-text").innerHTML = "bite";
+      }
 
       if (chosenHand === "left") {
         leftHandCount = count;

@@ -133,7 +133,33 @@ export function detectDynamicGesture(history) {
     frame2Check = true;
   }
   if (frame1Check && frame2Check) {
-    document.getElementById("double-hand-text").innerHTML = "Bite";
-    console.log("Bite gesture detected");
+    //document.getElementById("double-hand-text").innerHTML = "Bite";
+    //console.log("Bite gesture detected");
+    return true;
   }
+  return false;
 }
+
+// function calculateDistance(hand1, hand2) {
+//   if (!hand1 || !hand2) {
+//     return null;
+//   }
+//   const wrist1 = hand1.keypoints.find((kp) => kp.name === "wrist");
+//   const wrist2 = hand2.keypoints.find((kp) => kp.name === "wrist");
+
+//   if (wrist1 && wrist2) {
+//     const dx = wrist1.x - wrist2.x;
+//     const dy = wrist1.y - wrist2.y;
+//     const distance = Math.sqrt(dx * dx + dy * dy);
+//     return distance;
+//   }
+//   return null;
+// }
+
+// function areHandsClose(leftHand, rightHand, threshold = 300) {
+//   const distance = calculateDistance(leftHand, rightHand);
+//   if (distance && distance < threshold) {
+//     return true;
+//   }
+//   return false;
+// }
