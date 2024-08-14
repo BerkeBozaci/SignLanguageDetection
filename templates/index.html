@@ -18,6 +18,8 @@
   <!-- The fingerpose library -->
   <script src="https://cdn.jsdelivr.net/npm/fingerpose@0.1.0/dist/fingerpose.min.js"></script>
 
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
   <style>
     * {
       box-sizing: border-box;
@@ -262,8 +264,9 @@
           </tr>
         </tbody>
       </table>
-      <button id="delete-button">Delete All Text</button>
-      <button id="delete-last">Delete Last Text</button>
+      <button class="btn btn-danger" id="delete-button">Delete All Text</button>
+      <br>
+      <button class="btn btn-danger" id="delete-last">Delete Last Text</button>
       <br>
       <h2>Double Hand Text Detection</h2>
       <table class="summary">
@@ -279,7 +282,7 @@
         </tbody>
       </table>
       <br>
-      <a href="/emotion" class="button">Go to Emotion Recognition</a>
+      <a href="/emotion" class="btn btn-primary">Go to Emotion Recognition</a>
 
       
     </div>
