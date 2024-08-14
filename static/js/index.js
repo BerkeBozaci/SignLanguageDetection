@@ -38,28 +38,6 @@ const handHistory = {
 
 const maxHistoryLength = 10;
 
-async function analyzeEmotion(imageData) {
-  const response = await fetch("http://127.0.0.1:5000/analyze", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ image: imageData }),
-  });
-  const result = await response.json();
-  console.log(result);
-  const emotion = result[0].dominant_emotion;
-  document.getElementById("emotion").innerHTML = emotion;
-}
-function captureImage(video) {
-  const canvas = document.createElement("canvas");
-  canvas.width = video.videoWidth;
-  canvas.height = video.videoHeight;
-  const ctx = canvas.getContext("2d");
-  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-  return canvas.toDataURL("image/jpeg").split(",")[1];
-}
-
 async function createDetector() {
   return window.handPoseDetection.createDetector(
     window.handPoseDetection.SupportedModels.MediaPipeHands,
@@ -96,6 +74,7 @@ async function main() {
   console.log("mediaPose model loaded");
 
   const pair = new Set();
+
   function checkGestureCombination(chosenHand, poseData) {
     const addToPairIfCorrect = (chosenHand) => {
       const containsHand = poseData.some((finger) =>
@@ -248,9 +227,6 @@ async function main() {
 
     updateHandStatus(leftHandDetected, rightHandDetected);
     updateCombinedCount(leftHandCount, rightHandCount);
-
-    const imageData = captureImage(video);
-    await analyzeEmotion(imageData);
 
     setTimeout(() => {
       estimateHands();
