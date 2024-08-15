@@ -2,9 +2,15 @@
 
 ## To Install and Run
 
-´pip3 install flask deepface tf_keras opencv-python´
+python3 app.py
 
-´python3 app.py´
+```
+pip3 install flask deepface tf_keras opencv-python
+```
+
+```
+python3 app.py
+```
 
 ## Finger Detection and Sign Language Detection
 
