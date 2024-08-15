@@ -1,17 +1,6 @@
-const video = document.getElementById("video");
-const canvas = document.getElementById("canvas");
+const video = document.getElementById("pose-video");
+const canvas = document.getElementById("pose-canvas");
 const text = document.getElementById("expr");
-const debugON = false;
-
-const args = {
-  angry: "https://image.flaticon.com/icons/png/128/260/260228.png",
-  happy: "https://image.flaticon.com/icons/png/128/187/187142.png",
-  disgusted: "https://image.flaticon.com/icons/png/128/637/637523.png",
-  fearful: "https://image.flaticon.com/icons/png/128/166/166524.png",
-  neutral: "https://image.flaticon.com/icons/png/128/2164/2164188.png",
-  sad: "https://image.flaticon.com/icons/png/128/187/187150.png",
-  surprised: "https://image.flaticon.com/icons/png/128/166/166534.png",
-};
 
 let url =
   "https://raw.githubusercontent.com/justadudewhohacks/face-api.js/master/weights/";
@@ -29,79 +18,70 @@ Promise.all([
   faceapi.nets.faceExpressionNet.loadFromUri(
     url + "face_expression_model-weights_manifest.json"
   ),
-]).then(startVideo);
+])
+  .then(() => {
+    console.log("Models loaded successfully");
+    startVideo();
+  })
+  .catch((err) => console.error("Error loading models: ", err));
 
 function objToString(obj) {
   let mostPredict = "neutral";
   let maxVal = 0;
-  var str = mostPredict;
 
-  if (!obj) return str;
+  if (!obj || !obj.expressions) return mostPredict;
 
-  obj = obj.expressions;
-  for (var p in obj) {
-    if (obj.hasOwnProperty(p)) {
-      if (obj[p] > maxVal) {
-        maxVal = obj[p];
-        mostPredict = p;
+  for (let expression in obj.expressions) {
+    if (obj.expressions.hasOwnProperty(expression)) {
+      if (obj.expressions[expression] > maxVal) {
+        maxVal = obj.expressions[expression];
+        mostPredict = expression;
       }
     }
   }
-
-  if (debugON == true) console.log(mostPredict, maxVal);
 
   return mostPredict;
 }
 
 function startVideo() {
-  navigator.getUserMedia =
-    navigator.getUserMedia ||
-    navigator.webkitGetUserMedia ||
-    navigator.mozGetUserMedia ||
-    navigator.msGetUserMedia;
-
-  /*navigator.getUserMedia(
-    { video: {} },
-    stream => (video.srcObject = stream),
-    err => {
-      console.error(err);
-    }
-  );*/
-
-  if (navigator.getUserMedia) {
-    navigator.getUserMedia(
-      { audio: true, video: { width: 1280, height: 720 } },
-      function (stream) {
-        var video = document.querySelector("video");
-        video.srcObject = stream;
-        video.onloadedmetadata = function (e) {
-          video.play();
-        };
-      },
-      function (err) {
-        console.log("The following error occurred: " + err.name);
-      }
-    );
-  } else {
-    document.body.innerText = "getUserMedia not supported";
-    console.log("getUserMedia not supported");
-  }
+  navigator.mediaDevices
+    .getUserMedia({ video: { width: 640, height: 480 } })
+    .then((stream) => {
+      video.srcObject = stream;
+      video.play();
+    })
+    .catch((err) => {
+      console.error("Error accessing camera: ", err);
+      document.body.innerText =
+        "Camera access is not supported by your browser or device.";
+    });
 }
 
 video.addEventListener("play", () => {
-  let visitedMsg = true;
+  // Wait for the video to load metadata to get its correct dimensions
+  video.addEventListener("loadedmetadata", () => {
+    const displaySize = { width: video.videoWidth, height: video.videoHeight };
+    faceapi.matchDimensions(canvas, displaySize);
 
-  setInterval(async () => {
-    const detections = await faceapi
-      .detectAllFaces(video, new faceapi.TinyFaceDetectorOptions())
-      .withFaceLandmarks()
-      .withFaceExpressions();
+    setInterval(async () => {
+      const detections = await faceapi
+        .detectAllFaces(video, new faceapi.TinyFaceDetectorOptions())
+        //.withFaceLandmarks()
+        .withFaceExpressions();
 
-    if (visitedMsg) {
-      text.innerText = "Your expression";
-      visitedMsg = false;
-    }
-
-    text.innerHTML = objToString(detections[0]);
-  }, 100);
+      if (detections.length > 0) {
+        const resizedDetections = faceapi.resizeResults(
+          detections,
+          displaySize
+        );
+        canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
+        //faceapi.draw.drawDetections(canvas, resizedDetections);
+        //faceapi.draw.drawFaceLandmarks(canvas, resizedDetections);
+        faceapi.draw.drawFaceExpressions(canvas, resizedDetections);
+        text.innerText = objToString(detections[0]);
+      } else {
+        text.innerText = "No face detected";
+      }
+    }, 100);
+  });
 });

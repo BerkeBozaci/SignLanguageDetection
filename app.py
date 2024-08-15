@@ -15,11 +15,9 @@ def home():
 def emotion():
     return render_template('emotion.html')
 
-
 @app.route('/jsemotion')
 def jsemotion():
     return render_template('face.html')
-
 
 @app.route('/analyze', methods=['POST'])
 def analyze():
