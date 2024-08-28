@@ -1,5 +1,5 @@
 export function checkAlphabetGesture(poseData) {
-  console.log("Checking alphabet gesture");
+  //console.log("Checking alphabet gesture");
   //Case A:
   if (
     // thumb

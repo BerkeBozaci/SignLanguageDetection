@@ -1,1 +1,15 @@
 venv/
+*.csv
+*.pkl
+*.log
+*.ipynb_checkpoints
+*.onnx
+
+static/models/
+
+node_modules/
+
+/model_tfjs
+/tensorflow_model
+
+*.h5

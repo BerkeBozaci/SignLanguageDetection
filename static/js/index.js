@@ -1,6 +1,7 @@
 import { gestures } from "./gestures.js";
 import { detectBiteGesture, detectLoveGesture } from "./words.js";
 import { checkAlphabetGesture } from "./letters.js";
+import { predict, convertInputToNumerical } from "./checkmodel.js";
 
 const config = {
   video: { width: 640, height: 480, fps: 30 },
@@ -37,6 +38,9 @@ const handHistory = {
 };
 
 const maxHistoryLength = 10;
+
+let capturing = false;
+let dataToWrite = [];
 
 async function createDetector() {
   return window.handPoseDetection.createDetector(
@@ -174,6 +178,27 @@ async function main() {
       if (prediction.gestures.length === 0) {
         updateDebugInfo(prediction.poseData, hand.handedness.toLowerCase());
         checkAlphabetGesture(prediction.poseData);
+
+        // Convert the pose data to CSV string
+        const poseDataCsv = `
+      ${prediction.poseData[0][1]},${prediction.poseData[0][2]},
+      ${prediction.poseData[1][1]},${prediction.poseData[1][2]},
+      ${prediction.poseData[2][1]},${prediction.poseData[2][2]},
+      ${prediction.poseData[3][1]},${prediction.poseData[3][2]},
+      ${prediction.poseData[4][1]},${prediction.poseData[4][2]}
+      `;
+        //console.log("Pose data CSV", poseDataCsv);
+        const numericalInput = convertInputToNumerical(poseDataCsv);
+        //console.log("Numerical input", numericalInput);
+        // Call the predict function
+        predict(numericalInput);
+
+        if (capturing) {
+          dataToWrite.push({
+            timestamp: Date.now(),
+            poseData: prediction.poseData,
+          });
+        }
       }
 
       if (!prediction.gestures.length) continue;
@@ -197,6 +222,35 @@ async function main() {
       checkHolonextGesture(prediction.poseData);
 
       checkAlphabetGesture(prediction.poseData);
+
+      // Convert the pose data to CSV string
+      const poseDataCsv = `
+      ${prediction.poseData[0][1]},${prediction.poseData[0][2]},
+      ${prediction.poseData[1][1]},${prediction.poseData[1][2]},
+      ${prediction.poseData[2][1]},${prediction.poseData[2][2]},
+      ${prediction.poseData[3][1]},${prediction.poseData[3][2]},
+      ${prediction.poseData[4][1]},${prediction.poseData[4][2]}
+      `;
+      //console.log("Pose data CSV", poseDataCsv);
+      const numericalInput = convertInputToNumerical(poseDataCsv);
+      //console.log("Numerical input", numericalInput);
+      // Call the predict function
+      predict(numericalInput);
+
+      // if (prediction.poseData.length > 0) {
+      //   writeDataToCSV(prediction.poseData, "gesture_data.csv");
+      // }
+
+      // if (capturing && prediction.poseData.length > 0) {
+      //   dataToWrite.push(prediction.poseData);
+      // }
+
+      if (capturing && prediction.poseData.length > 0) {
+        dataToWrite.push({
+          timestamp: Date.now(),
+          poseData: prediction.poseData,
+        });
+      }
 
       let distanceBetweenHand = Infinity;
       if (leftWrist && rightWrist) {
@@ -424,6 +478,46 @@ function updateCombinedCount(leftHandCount, rightHandCount) {
   document.getElementById("no-curl-count").innerHTML = combinedCount;
 }
 
+function handleCaptureButton() {
+  const captureButton = document.getElementById("capture-button");
+  captureButton.addEventListener("click", () => {
+    capturing = !capturing;
+    captureButton.textContent = capturing ? "Stop Capture" : "Start Capture";
+
+    if (!capturing) {
+      if (dataToWrite.length > 0) {
+        const csvContent =
+          "data:text/csv;charset=utf-8," +
+          "timestamp,Thumb Curl,Thumb Direction,Index Curl,Index Direction,Middle Curl,Middle Direction,Ring Curl,Ring Direction,Pinky Curl,Pinky Direction\n" +
+          dataToWrite
+            .map(({ timestamp, poseData }) => {
+              const thumbCurl = poseData[0][1];
+              const thumbDirection = poseData[0][2];
+              const indexCurl = poseData[1][1];
+              const indexDirection = poseData[1][2];
+              const middleCurl = poseData[2][1];
+              const middleDirection = poseData[2][2];
+              const ringCurl = poseData[3][1];
+              const ringDirection = poseData[3][2];
+              const pinkyCurl = poseData[4][1];
+              const pinkyDirection = poseData[4][2];
+
+              return `${timestamp},${thumbCurl},${thumbDirection},${indexCurl},${indexDirection},${middleCurl},${middleDirection},${ringCurl},${ringDirection},${pinkyCurl},${pinkyDirection}`;
+            })
+            .join("\n");
+
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "gesture_data.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        dataToWrite = [];
+      }
+    }
+  });
+}
 window.addEventListener("DOMContentLoaded", () => {
   initCamera(config.video.width, config.video.height, config.video.fps).then(
     (video) => {
@@ -431,6 +525,7 @@ window.addEventListener("DOMContentLoaded", () => {
       video.addEventListener("loadeddata", (event) => {
         console.log("Camera is ready");
         main();
+        handleCaptureButton();
       });
     }
   );
