@@ -13,6 +13,10 @@ export async function predict(inputData) {
   const predictedLabel = prediction.argMax(-1).dataSync()[0];
   //console.log(`Predicted Label: ${predictedLabel}`);
 
+  // Convert the tensor to an array of probabilities
+  const probabilities = prediction.dataSync(); // Array of probabilities for each letter
+  //console.log("Probabilities:", probabilities);
+
   const labelToLetter = [
     "A",
     "B",
@@ -39,6 +43,22 @@ export async function predict(inputData) {
     "X",
     "Y",
   ];
+
+  const letterProbabilities = labelToLetter.map((letter, index) => ({
+    letter: letter,
+    probability: probabilities[index].toFixed(2), // Limiting to 2 decimal places for readability
+  }));
+
+  // Sort the letters by probability, descending
+  letterProbabilities.sort((a, b) => b.probability - a.probability);
+
+  // Output the top predictions with their confidence levels
+  letterProbabilities.forEach((lp) => {
+    if (lp.probability < 0.01) {
+      return;
+    }
+    console.log(`${lp.letter} -> ${lp.probability}`);
+  });
 
   if (predictedLabel < labelToLetter.length) {
     const predictedLetter = labelToLetter[predictedLabel];
