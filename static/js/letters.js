@@ -569,3 +569,5 @@ export function updateTextArea(letter) {
   }
   document.getElementById("detected-text").innerHTML = textArea;
 }
+
+

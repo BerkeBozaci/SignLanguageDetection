@@ -195,7 +195,7 @@ async function main() {
 
         if (capturing) {
           dataToWrite.push({
-            timestamp: Date.now(),
+            //timestamp: Date.now(),
             poseData: prediction.poseData,
           });
         }
@@ -247,7 +247,7 @@ async function main() {
 
       if (capturing && prediction.poseData.length > 0) {
         dataToWrite.push({
-          timestamp: Date.now(),
+          //timestamp: Date.now(),
           poseData: prediction.poseData,
         });
       }
@@ -488,9 +488,9 @@ function handleCaptureButton() {
       if (dataToWrite.length > 0) {
         const csvContent =
           "data:text/csv;charset=utf-8," +
-          "timestamp,Thumb Curl,Thumb Direction,Index Curl,Index Direction,Middle Curl,Middle Direction,Ring Curl,Ring Direction,Pinky Curl,Pinky Direction\n" +
+          "Thumb Curl,Thumb Direction,Index Curl,Index Direction,Middle Curl,Middle Direction,Ring Curl,Ring Direction,Pinky Curl,Pinky Direction\n" +
           dataToWrite
-            .map(({ timestamp, poseData }) => {
+            .map(({ poseData }) => {
               const thumbCurl = poseData[0][1];
               const thumbDirection = poseData[0][2];
               const indexCurl = poseData[1][1];
@@ -502,7 +502,7 @@ function handleCaptureButton() {
               const pinkyCurl = poseData[4][1];
               const pinkyDirection = poseData[4][2];
 
-              return `${timestamp},${thumbCurl},${thumbDirection},${indexCurl},${indexDirection},${middleCurl},${middleDirection},${ringCurl},${ringDirection},${pinkyCurl},${pinkyDirection}`;
+              return `${thumbCurl},${thumbDirection},${indexCurl},${indexDirection},${middleCurl},${middleDirection},${ringCurl},${ringDirection},${pinkyCurl},${pinkyDirection}`;
             })
             .join("\n");
 

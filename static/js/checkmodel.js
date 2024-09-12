@@ -53,7 +53,9 @@ export async function predict(inputData) {
 async function loadModel() {
   if (!model) {
     try {
-      model = await tf.loadGraphModel("/models/model_tfjs/model.json");
+      model = await tf.loadGraphModel(
+        "/models/neural_network_model/model.json"
+      );
       console.log("Model loaded successfully");
     } catch (error) {
       console.error("Error loading model:", error);
@@ -63,44 +65,45 @@ async function loadModel() {
 }
 
 const mappings = {
-  "Thumb Curl": { "No Curl": 1, "Half Curl": 0 },
+  "Thumb Curl": { "No Curl": 0, "Half Curl": 1, "Full Curl": 2 },
   "Thumb Direction": {
-    "Diagonal Down Right": 0,
-    "Vertical Up": 5,
-    "Diagonal Up Right": 2,
-    "Diagonal Up Left": 1,
-    "Horizontal Right": 4,
-    "Horizontal Left": 3,
+    "Vertical Up": 0,
+    "Diagonal Up Right": 1,
+    "Diagonal Up Left": 2,
+    "Horizontal Right": 3,
+    "Horizontal Left": 4,
   },
-  "Index Curl": { "No Curl": 2, "Half Curl": 1, "Full Curl": 0 },
+  "Index Curl": { "No Curl": 0, "Half Curl": 1, "Full Curl": 2 },
   "Index Direction": {
-    "Vertical Up": 3,
+    "Vertical Up": 0,
     "Diagonal Up Right": 1,
-    "Diagonal Up Left": 0,
-    "Horizontal Right": 2,
+    "Diagonal Up Left": 2,
+    "Horizontal Right": 3,
+    "Horizontal Left": 4,
   },
-  "Middle Curl": { "No Curl": 2, "Half Curl": 1, "Full Curl": 0 },
+  "Middle Curl": { "No Curl": 0, "Half Curl": 1, "Full Curl": 2 },
   "Middle Direction": {
-    "Vertical Up": 4,
-    "Diagonal Up Right": 2,
-    "Diagonal Up Left": 1,
+    "Vertical Up": 0,
+    "Diagonal Up Right": 1,
+    "Diagonal Up Left": 2,
     "Horizontal Right": 3,
+    "Horizontal Left": 4,
   },
-  "Ring Curl": { "No Curl": 2, "Half Curl": 1, "Full Curl": 0 },
+  "Ring Curl": { "No Curl": 0, "Half Curl": 1, "Full Curl": 2 },
   "Ring Direction": {
-    "Vertical Up": 4,
+    "Vertical Up": 0,
     "Diagonal Up Right": 1,
-    "Diagonal Up Left": 0,
+    "Diagonal Up Left": 2,
     "Horizontal Right": 3,
-    "Horizontal Left": 2,
+    "Horizontal Left": 4,
   },
-  "Pinky Curl": { "No Curl": 2, "Half Curl": 1, "Full Curl": 0 },
+  "Pinky Curl": { "No Curl": 0, "Half Curl": 1, "Full Curl": 2 },
   "Pinky Direction": {
-    "Vertical Up": 4,
+    "Vertical Up": 0,
     "Diagonal Up Right": 1,
-    "Diagonal Up Left": 0,
+    "Diagonal Up Left": 2,
     "Horizontal Right": 3,
-    "Horizontal Left": 2,
+    "Horizontal Left": 4,
   },
 };
 
