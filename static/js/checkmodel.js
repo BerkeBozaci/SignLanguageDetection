@@ -46,27 +46,46 @@ export async function predict(inputData) {
 
   const letterProbabilities = labelToLetter.map((letter, index) => ({
     letter: letter,
-    probability: probabilities[index].toFixed(2), // Limiting to 2 decimal places for readability
+    probability: probabilities[index].toFixed(5), // Limiting to 5 decimal places for readability
   }));
 
   // Sort the letters by probability, descending
   letterProbabilities.sort((a, b) => b.probability - a.probability);
 
   // Output the top predictions with their confidence levels
-  letterProbabilities.forEach((lp) => {
-    if (lp.probability < 0.01) {
-      return;
-    }
-    console.log(`${lp.letter} -> ${lp.probability}`);
-  });
+  // letterProbabilities.forEach((lp) => {
+  //   if (lp.probability < 0.01) {
+  //     return;
+  //   }
+  //   console.log(`${lp.letter} -> ${lp.probability}`);
+  // });
 
-  if (predictedLabel < labelToLetter.length) {
-    const predictedLetter = labelToLetter[predictedLabel];
-    console.log(`Predicted Letter: ${predictedLetter}`);
-    return predictedLetter;
+  // if (predictedLabel < labelToLetter.length) {
+  //   const predictedLetter = labelToLetter[predictedLabel];
+  //   console.log(`Predicted Letter: ${predictedLetter}`);
+  //   return predictedLetter;
+  // } else {
+  //   console.error("Predicted label index is out of bounds:", predictedLabel);
+  //   return null;
+  // }
+
+  // Output the top predictions with their confidence levels
+  const mostConfidentPrediction = letterProbabilities[0];
+  console.log(
+    `${mostConfidentPrediction.letter} -> ${mostConfidentPrediction.probability}`
+  );
+
+  // Apply the confidence threshold
+  if (mostConfidentPrediction.probability >= 0.9) {
+    console.log(
+      `Prediction accepted: ${mostConfidentPrediction.letter} with confidence ${mostConfidentPrediction.probability}`
+    );
+    return mostConfidentPrediction.letter;
   } else {
-    console.error("Predicted label index is out of bounds:", predictedLabel);
-    return null;
+    console.log(
+      `Prediction rejected due to low confidence: ${mostConfidentPrediction.letter} with confidence ${mostConfidentPrediction.probability}`
+    );
+    return null; // Or handle as no valid prediction
   }
 }
 
@@ -150,3 +169,115 @@ export function convertInputToNumerical(poseDataCsv) {
 
   return numericalInput;
 }
+
+/*
+Probability Report:
+
+A:
+A -> 0.98107
+M -> 0.01854
+
+B:
+B -> 0.98509
+F -> 0.01362
+
+C:
+C -> 0.99965
+
+D:
+D -> 0.99929
+
+E:
+E -> 0.98404
+S -> 0.01333
+-----
+E -> 0.97933
+N -> 0.02008
+
+F:
+F -> 0.98374
+C -> 0.01388
+
+G:
+G -> 0.87458
+Q -> 0.11883
+----
+G -> 0.99390
+
+H:
+H -> 0.99115
+
+I:
+I -> 0.99974
+
+K:
+K -> 0.97761
+R -> 0.02228
+-------
+K -> 0.99630
+
+L:
+L -> 0.97920
+G -> 0.01616
+-------
+L -> 0.99703
+
+
+M:
+M -> 0.93113
+N -> 0.06776
+
+
+N:
+N -> 0.99959
+
+O:
+O -> 0.94992
+C -> 0.04967
+
+P:
+P -> 0.62774
+H -> 0.17796
+X -> 0.12099
+O -> 0.03911
+C -> 0.01922
+Q -> 0.01444
+
+
+Q:
+Q -> 0.79172
+P -> 0.09944
+G -> 0.09833
+X -> 0.01049
+
+R:
+R -> 0.96983
+V -> 0.02157
+
+S:
+S -> 0.96736
+N -> 0.02414
+
+T:
+T -> 0.98423
+N -> 0.01468
+------
+T -> 0.99758
+
+U:
+U -> 0.97389
+V -> 0.02552
+
+V:
+V -> 0.99107
+
+W:
+W -> 0.99979
+
+X:
+X -> 0.99755
+
+Y:
+Y -> 0.99996
+
+*/
